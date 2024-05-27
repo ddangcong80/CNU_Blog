@@ -1,23 +1,21 @@
-import { useEffect, useState } from 'react';
-import { getPostList } from '../api';
 import PostListItem from '../components/PostListItem';
-import { IResponsePostList } from '../api/types';
 import NoPostList from '../components/NoPostList';
+import useGetPostList from '../queries/useGetPostList.ts';
+import NotFound from '../components/NotFound.tsx';
 
 const Home = () => {
-  const [postList, setPostList] = useState<IResponsePostList>([]);
+  const { data: postList = [], isError, isLoading } = useGetPostList();
 
-  const fetchPostList = async () => {
-    const { data } = await getPostList();
-    setPostList(data);
-  };
-
-  useEffect(() => {
-    fetchPostList();
-  }, []);
+  if (isLoading) {
+    return <div>...불러오는 중...</div>;
+  }
 
   if (postList.length === 0) {
     return <NoPostList />;
+  }
+
+  if (isError) {
+    return <NotFound />;
   }
 
   return (
